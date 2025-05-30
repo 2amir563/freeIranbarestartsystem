@@ -571,12 +571,16 @@ setup_ikev2_ipsec() {
   fi
 }
 
-# 21. Function to Setup/Run Restart Scheduler
-setup_run_restart_scheduler() {
-  dialog --title "Setup/Run Restart Scheduler" --yesno "This will download, install, and run the 'restart_scheduler.py' script from GitHub.\n\nThis script allows you to schedule system restarts at multiple specific times.\n\nDo you want to proceed?" 15 75
+# 21. Function to setup Restart Scheduler
+setup_restart_scheduler() {
+  dialog --title "Setup Restart Scheduler" --yesno "This will download and execute a script to schedule system restarts at multiple times using Python. Do you want to proceed?" 10 70
   response=$?
   if [ $response -eq 0 ]; then
-    clear # Clear screen for better visibility of the external script's output
+    dialog --infobox "Proceeding with Restart Scheduler setup. The script will run in the terminal. Please observe its output." 6 70
+    sleep 3 # Give user time to read the dialog
+
+    clear # Clear dialog screen for the script's output
+
     sudo bash -c '
     set -e;
     SCRIPT_URL="https://raw.githubusercontent.com/2amir563/restart-at-moultitime/refs/heads/main/restart_scheduler.py";
@@ -585,9 +589,6 @@ setup_run_restart_scheduler() {
     TEMP_DOWNLOAD_FILE="/tmp/restart_scheduler_temp.py";
     FINAL_SCRIPT_PATH="$INSTALL_DIR/$SCRIPT_NAME_IN_PATH";
 
-    echo "-----------------------------------------------------"
-    echo "INFO: Starting Restart Scheduler Setup/Execution"
-    echo "-----------------------------------------------------"
     echo "INFO: Downloading restart_scheduler script...";
     if curl -fsSL "$SCRIPT_URL" -o "$TEMP_DOWNLOAD_FILE"; then
         echo "INFO: Download successful to $TEMP_DOWNLOAD_FILE.";
@@ -614,17 +615,13 @@ setup_run_restart_scheduler() {
     fi;
 
     echo "INFO: Setup complete. Running the script ($FINAL_SCRIPT_PATH)...";
-    "$FINAL_SCRIPT_PATH"; # This executes the Python script
-    echo "-----------------------------------------------------"
-    echo "INFO: Restart Scheduler script execution finished."
-    echo "-----------------------------------------------------"
-    ' # End of sudo bash -c block
-
-    # After the block finishes
-    dialog --title "Operation Complete" --msgbox "Restart Scheduler script has finished.\n\nOutput and any interactions were displayed in the terminal." 10 70
-    read -p "Please press Enter to return to the main menu."
+    "$FINAL_SCRIPT_PATH";
+    echo "INFO: Script execution finished or has been handed over to the script itself.";
+'
+    echo # Newline for separation
+    read -n 1 -s -r -p "The Restart Scheduler setup script has finished processing. Press any key to return to the main menu..."
   else
-    dialog --msgbox "Restart Scheduler setup/run skipped." 10 60
+    dialog --msgbox "Restart Scheduler setup skipped by user." 10 60
   fi
 }
 
@@ -682,7 +679,7 @@ exit_script() {
 
 # Main menu options using dialog
 while true; do
-  choice=$(dialog --clear --backtitle "FreeIRAN v.1.4.0 - Main Menu" --title "Main Menu" --menu "Choose an option:" 30 60 26 \
+  choice=$(dialog --clear --backtitle "FreeIRAN v.1.4.0 - Main Menu" --title "Main Menu" --menu "Choose an option:" 30 60 24 \
     1 "System Update and Cleanup" \
     2 "Install Essential Packages" \
     3 "Install Speedtest" \
@@ -703,7 +700,7 @@ while true; do
     18 "Setup/Manage WireGuard" \
     19 "Setup/Manage OpenVPN" \
     20 "Setup IKEv2/IPsec" \
-    21 "Setup/Run Restart Scheduler" \
+    21 "Setup Restart Scheduler" \
     22 "Create SSH User" \
     23 "Reboot System" \
     24 "Exit Script" 3>&1 1>&2 2>&3)
@@ -729,7 +726,7 @@ while true; do
     18) setup_wireguard_angristan ;;
     19) setup_openvpn_angristan ;;
     20) setup_ikev2_ipsec ;;
-    21) setup_run_restart_scheduler ;;
+    21) setup_restart_scheduler ;;
     22) create_ssh_user ;;
     23) reboot_system ;;
     24) exit_script ;;
