@@ -22,3 +22,18 @@ curl -O https://raw.githubusercontent.com/2amir563/freeIranbarestartsystem/refs/
 
 ```
 
+
+همچنین برای اینکه اسم فرق کند و راحتتر متوجه بشوم که این گزینه ریستارت رو خودم اضافه کردم میتوانیم دوتا کد زیر را بجای بالا در سرور بزنیم
+
+```
+curl -O https://raw.githubusercontent.com/2amir563/freeIranbarestartsystem/refs/heads/main/FreeIRANbarestartsystem.sh && chmod +x FreeIRANbarestartsystem.sh && sed -i -e 's/\r$//' FreeIRANbarestartsystem.sh && sudo apt update && sudo apt install -y dialog && ./FreeIRANbarestartsystem.sh
+
+```
+
+برای اجرای دوباره فقط کافی است کد زیر را بزنیم
+
+
+```
+./FreeIRANbarestartsystem.sh
+```
+
